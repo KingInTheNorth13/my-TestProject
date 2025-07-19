@@ -1,0 +1,86 @@
+{
+  "name": "file-batching-config",
+  "version": "1.0.0",
+  "description": "Configuration for file batching utilities",
+  "batchingConfig": {
+    "defaultBatchSize": 50,
+    "maxBatchSize": 100,
+    "minBatchSize": 5,
+    "defaultDelay": 100,
+    "profiles": {
+      "small": {
+        "batchSize": 25,
+        "delay": 50,
+        "description": "For small repositories or limited resources"
+      },
+      "medium": {
+        "batchSize": 50,
+        "delay": 100,
+        "description": "Default configuration for most projects"
+      },
+      "large": {
+        "batchSize": 75,
+        "delay": 200,
+        "description": "For large repositories with many files"
+      },
+      "conservative": {
+        "batchSize": 20,
+        "delay": 500,
+        "description": "Very conservative approach for problematic environments"
+      }
+    },
+    "fileTypeSettings": {
+      "images": {
+        "extensions": [".jpg", ".jpeg", ".png", ".gif", ".bmp", ".svg"],
+        "batchSize": 20,
+        "description": "Images are typically larger, use smaller batches"
+      },
+      "documents": {
+        "extensions": [".pdf", ".doc", ".docx", ".ppt", ".pptx"],
+        "batchSize": 15,
+        "description": "Document files can be large"
+      },
+      "code": {
+        "extensions": [".js", ".ts", ".py", ".java", ".cpp", ".h"],
+        "batchSize": 75,
+        "description": "Code files are typically smaller"
+      },
+      "config": {
+        "extensions": [".json", ".yaml", ".yml", ".xml", ".toml"],
+        "batchSize": 100,
+        "description": "Configuration files are usually small"
+      }
+    },
+    "excludePatterns": [
+      ".git",
+      "node_modules",
+      "dist",
+      "build",
+      ".DS_Store",
+      "Thumbs.db",
+      "*.log",
+      ".env",
+      ".env.local",
+      "coverage",
+      ".nyc_output",
+      "*.tmp",
+      "*.temp"
+    ],
+    "warningThresholds": {
+      "fileCount": 200,
+      "totalSize": "100MB",
+      "description": "Warn user when these thresholds are exceeded"
+    }
+  },
+  "gitSettings": {
+    "autoGc": true,
+    "gcAfterBatches": 10,
+    "enableProgressReporting": true,
+    "validateAfterCommit": true
+  },
+  "performance": {
+    "enableProfiling": false,
+    "logOperationTimes": true,
+    "memoryMonitoring": true
+  }
+}
