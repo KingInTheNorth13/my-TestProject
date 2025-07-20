@@ -7,7 +7,7 @@
     "analyze": "node file-batch-utils.js analyze",
     "demo": "node batch-demo.js",
     "help": "node file-batch-utils.js help",
-    "test": "node batch-demo.js --files=25"
+    "test": "node file-batch-utils.js analyze --dry-run"
   },
   "bin": {
     "batch-files": "./file-batch-utils.js"
