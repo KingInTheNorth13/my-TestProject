@@ -1,0 +1,126 @@
+name: Safe Git Operations
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  safe-git-add-example:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Build project (if applicable)
+      run: |
+        if [ -f "package.json" ] && grep -q '"build":' package.json; then
+          npm run build
+        else
+          echo "No build script found, skipping..."
+        fi
+    
+    # ❌ AVOID - This can cause SIGTERM errors with large repositories
+    # - name: Add all files (DANGEROUS)
+    #   run: git add . -v
+    
+    # ✅ RECOMMENDED - Safe alternatives
+    - name: Add files safely - Option 1 (Use safe script)
+      run: |
+        chmod +x ./safe-git-add.sh
+        ./safe-git-add.sh --src-only --batch-size=50
+    
+    - name: Add files safely - Option 2 (Specific patterns)
+      run: |
+        # Add specific directories and files
+        git add src/ public/ docs/ *.md package.json package-lock.json
+        
+    - name: Add files safely - Option 3 (Use batching utility)
+      run: |
+        # Use the Node.js batching utility
+        node file-batch-utils.js
+    
+    - name: Show git status
+      run: git status --porcelain
+    
+    - name: Commit changes (example)
+      run: |
+        git config user.name "GitHub Actions Bot"
+        git config user.email "actions@github.com"
+        
+        if [ -n "$(git status --porcelain)" ]; then
+          git commit -m "Automated update: $(date)"
+          echo "Changes committed successfully"
+        else
+          echo "No changes to commit"
+        fi
+
+  test-large-file-handling:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Create many test files
+      run: |
+        mkdir -p test-files
+        for i in {1..200}; do
+          echo "Test file content $i" > test-files/file$i.txt
+        done
+        echo "Created 200 test files"
+    
+    - name: Test safe git add with large file set
+      run: |
+        chmod +x ./safe-git-add.sh
+        
+        # Test dry run first
+        echo "=== DRY RUN TEST ==="
+        ./safe-git-add.sh --dry-run --batch-size=25
+        
+        # Test actual addition with batching
+        echo "=== ACTUAL RUN TEST ==="
+        ./safe-git-add.sh --batch-size=25
+        
+        echo "=== GIT STATUS ==="
+        git status --short | wc -l
+        echo "Successfully handled large file set without SIGTERM errors"
+    
+    - name: Clean up test files
+      run: |
+        git reset HEAD test-files/
+        rm -rf test-files/
+        echo "Cleaned up test files"
+
+  demonstrate-problem:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Show how the problem can occur
+      run: |
+        echo "=== This demonstrates the SIGTERM issue ==="
+        echo "If we had a large node_modules directory or many files:"
+        echo ""
+        echo "❌ git add . -v    # Can cause SIGTERM with many files"
+        echo "✅ ./safe-git-add.sh    # Safe alternative"
+        echo "✅ git add src/ *.md    # Specific patterns"
+        echo "✅ node file-batch-utils.js    # Batching utility"
+        echo ""
+        echo "Our .gitignore excludes problematic directories:"
+        echo "- node_modules/"
+        echo "- dist/, build/, .cache/"
+        echo "- Log files and temporary files"
