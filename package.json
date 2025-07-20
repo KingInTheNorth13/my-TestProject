@@ -1,0 +1,38 @@
+{
+  "name": "file-batching-utilities",
+  "version": "1.0.0",
+  "description": "Utilities for batching file operations to avoid performance issues when adding many files to git repositories",
+  "main": "file-batch-utils.js",
+  "scripts": {
+    "analyze": "node file-batch-utils.js analyze",
+    "demo": "node batch-demo.js",
+    "help": "node file-batch-utils.js help",
+    "test": "node batch-demo.js --files=25"
+  },
+  "bin": {
+    "batch-files": "./file-batch-utils.js"
+  },
+  "keywords": [
+    "git",
+    "batching",
+    "performance",
+    "file-operations",
+    "repository-management",
+    "utilities"
+  ],
+  "author": "File Batching Solution",
+  "license": "MIT",
+  "engines": {
+    "node": ">=12.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/KingInTheNorth13/my-TestProject.git"
+  },
+  "files": [
+    "file-batch-utils.js",
+    "batch-demo.js",
+    "batch-config.json",
+    "FILE_BATCHING_GUIDE.md"
+  ]
+}

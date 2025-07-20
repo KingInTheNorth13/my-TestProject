@@ -12,3 +12,9 @@ build/
 # OS-specific files
 .DS_Store
 Thumbs.db
+
+# Demo and test files (auto-generated)
+demo-files/
+temp-test/
+*.tmp
+*.temp
