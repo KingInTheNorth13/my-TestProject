@@ -38,8 +38,8 @@ if ! git status >/dev/null 2>&1; then
     exit 1
 fi
 
-# Find all files to add (excluding .git directory)
-mapfile -t files < <(find "$DIRECTORY" -type f -not -path "./.git/*" -not -path ".git/*")
+# Find all files to add (excluding .git directory and node_modules)
+mapfile -t files < <(find "$DIRECTORY" -type f -not -path "./.git/*" -not -path ".git/*" -not -path "./node_modules/*" -not -path "node_modules/*" -not -path "*/node_modules/*")
 total_files=${#files[@]}
 
 if [ $total_files -eq 0 ]; then
